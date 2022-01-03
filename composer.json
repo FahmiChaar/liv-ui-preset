@@ -1,18 +1,17 @@
 {
   "name": "laravel-frontend-presets/inertiajs",
-  "description": "A Laravel frontend preset to get you up and running with Inertia.js",
+  "description": "A Laravel frontend preset to get you up and running with Inertia.js and Vuetify",
   "keywords": ["laravel", "preset", "inertiajs"],
   "type": "library",
   "license": "MIT",
   "authors": [
     {
-      "name": "Michael Dyrynda",
-      "email": "michael@dyrynda.com.au"
+      "name": "Mohamed Fahmi Chaar",
+      "email": "fahmichaar@gmail.com"
     }
   ],
   "require": {
-    "laravel/ui": "^2.0",
-    "inertiajs/inertia-laravel": "^0.2"
+    "laravel/ui": "^2.0"
   },
   "require-dev": {
     "orchestra/testbench": "^3.8"

@@ -13,8 +13,9 @@
                 dense
             ></v-text-field>
             <slot name="search-after" :selectedRows="selectedRows">
-                <inertia-link v-if="!hideCreate" as="v-btn" class="text-capitalize ml-3" color="primary" :href="createRoute || route('dashboard.'+data.inertiaView+'.create')">
-                    <span>Ajouter </span> <span class="hidden md:inline"> {{ data.inertiaView }}</span>
+                <inertia-link v-if="!hideCreate" as="v-btn" class="text-capitalize ml-3" color="primary" :href="createRoute || route('dashboard.'+datatable.inertiaView+'.create')">
+                    <span>{{ createText || 'Create' }}</span> 
+                    <!-- <span class="hidden md:inline"> {{ datatable.inertiaView }}</span> -->
                 </inertia-link>
             </slot>
         </div>
@@ -33,27 +34,42 @@
             class="shadow"
         >
             <template #item="{item}">
-                <tr :class="item.cssClass">
+                <tr :class="[item.cssClass, {'bg-yellow-100': isItemSelected(item)}]">
                     <td v-if="selectable">
-                        <v-checkbox v-if="!item.notSelectable" color="primary" v-model="selectedRows" :value="item"></v-checkbox>
+                        <v-checkbox hide-details v-if="!item.notSelectable" color="primary" v-model="selectedRows" :value="item"></v-checkbox>
                     </td>
                     <td v-for="(col, index) in headers"
                         :key="index"
-                        >
+                    >
                         <v-runtime-template v-if="col.key != 'actions'"
                             :template="'<div>'+getColValue(item, col.key)+'</div>'">
                         </v-runtime-template>
                         <template v-else>
-                            <template v-if="data.isInertia && !hideActions">
-                                <inertia-link v-if="showAction('show')" as="v-btn" icon small color="default" :href="route('dashboard.'+data.inertiaView+'.show', item.id)">
-                                    <v-icon>remove_red_eye</v-icon>
-                                </inertia-link>
-                                <inertia-link v-if="showAction('edit')" as="v-btn" icon small color="default" :href="route('dashboard.'+data.inertiaView+'.edit', item.id)">
-                                    <v-icon>edit</v-icon>
-                                </inertia-link>
-                                <v-btn v-if="showAction('delete')" icon small color="default" @click="deleteRow(item.id)">
-                                    <v-icon>delete</v-icon>
-                                </v-btn>
+                            <template v-if="(datatable && datatable.isInertia || datatable && datatable.inertiaView) && !hideActions">
+                                <v-tooltip left>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <inertia-link v-if="showAction('show')" as="v-btn" icon small color="default" :href="route('dashboard.'+datatable.inertiaView+'.show', item.id)">
+                                            <v-icon v-bind="attrs" v-on="on">remove_red_eye</v-icon>
+                                        </inertia-link>
+                                    </template>
+                                    <span>Show details</span>
+                                </v-tooltip>
+                                <v-tooltip left>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <inertia-link v-if="showAction('edit')" as="v-btn" icon small color="default" :href="route('dashboard.'+datatable.inertiaView+'.edit', item.id)">
+                                            <v-icon v-bind="attrs" v-on="on">edit</v-icon>
+                                        </inertia-link>
+                                    </template>
+                                    <span>Edit</span>
+                                </v-tooltip>
+                                <v-tooltip left>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn v-if="showAction('delete')" icon small color="default" @click="deleteRow(item.id)">
+                                            <v-icon v-bind="attrs" v-on="on">delete</v-icon>
+                                        </v-btn>
+                                    </template>
+                                    <span>Delete</span>
+                                </v-tooltip>
                             </template>
                             <slot name="extra-actions" :item="item"></slot>
                         </template>
@@ -79,6 +95,7 @@ export default {
         'saveOrderUrl',
         'url',
         'createRoute',
+        'createText',
         'hideSearche',
         'hideCreate',
         'hideActions',
@@ -97,6 +114,7 @@ export default {
             filters: this.sortable,
             selectedRows: [],
             options: {},
+            datatable: this.data,
             model: this.data ? this.data.model : null,
             query: this.data && this.data.query || {},
             ajaxHeader: [],
@@ -126,8 +144,8 @@ export default {
         }
     },
     mounted: async function() {
-        if (this.data) {
-            this.headers = this.createHeaders(this.data.headers)
+        if (this.datatable) {
+            this.headers = this.createHeaders(this.datatable.headers)
         }
         if (this.url) {
             this.query = {}
@@ -161,6 +179,9 @@ export default {
         }
     },
     methods: {
+        isItemSelected(item) {
+            return this.selectedRows.findIndex(r => r.id === item.id) > -1
+        },
         async deleteRow(id) {
             const {value} = await this.$swal({
                 title: 'Are you sure you want to delete this',
@@ -171,7 +192,7 @@ export default {
                 cancelButtonText: 'No'
             })
             if (value) {
-                this.$inertia.delete(this.route('dashboard.'+this.data.inertiaView+'.destroy', id))
+                this.$inertia.delete(this.route('dashboard.'+this.datatable.inertiaView+'.destroy', id))
             }
         },
         createHeaders(headers) {
@@ -228,6 +249,7 @@ export default {
             return query.substr(0, query.length-1)
         },
         initData(data) {
+            this.datatable = data
             this.query = data.query || {};
             this.model = data.model
             this.ajaxHeader = data.headers
@@ -236,7 +258,7 @@ export default {
         },
         async getDataFromApi(page = null, params) {
             this.filters = this.replaceParams(params)
-            const urlParams = this.getQuery() ? this.getQuery() + (this.filters ? `&${this.filters}` : '') : (this.filters ? `${this.filters}` : '')
+            const urlParams = this.getQuery() && !this.url ? this.getQuery() + (this.filters ? `&${this.filters}` : '') : (this.filters ? `${this.filters}` : '')
             this.loading = true;
             let queryParams = page ? `?page=${page}&${urlParams}` : `?${urlParams}`;
             queryParams += this.search ? `&search=${encodeURIComponent(this.search.toLowerCase())}` : '';
@@ -273,7 +295,6 @@ export default {
         },
         saveOrder (event) {
             this.clonedArray.move(event.oldIndex, event.newIndex)
-            console.log('Model', this.model)
             if (this.model) {
                 try {
                     axios.post(this.saveOrderUrl || '/dashboard/save-order', {
@@ -290,3 +311,14 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.laravel-datatable {
+    .v-input--checkbox {
+        margin: 0 !important;
+        .v-input__slot {
+            width: fit-content !important;
+        }
+    }
+}
+</style>

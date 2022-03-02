@@ -5,7 +5,6 @@
     app
     :right="$appLocal == 'ar'"
     :clipped="$vuetify.breakpoint.mdAndUp"
-    :mini-variant="$vuetify.breakpoint.xsOnly"
   >
     <v-list class="pa-1 sidebar-profile-container">
       <inertia-link as="v-list-item"

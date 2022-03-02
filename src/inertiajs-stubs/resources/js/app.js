@@ -6,21 +6,29 @@ import { InertiaProgress } from '@inertiajs/progress'
 import vuetify from './plugins/vuetify'
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
-import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
-import * as rules from 'vee-validate/dist/rules';
+import { ValidationProvider, ValidationObserver } from 'vee-validate';
+// import * as rules from 'vee-validate/dist/rules';
+import Toast from "vue-toastification"
 
 InertiaProgress.init()
 Vue.use(plugin)
 
 Vue.use(VueSweetalert2);
 
+Vue.use(Toast, {
+  transition: "Vue-Toastification__bounce",
+  maxToasts: 20,
+  newestOnTop: true,
+  position: "bottom-right",
+});
+
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
-for (let [rule, validation] of Object.entries(rules)) {
-  extend(rule, {
-    ...validation
-  });
-}
+// for (let [rule, validation] of Object.entries(rules)) {
+//   extend(rule, {
+//     ...validation
+//   });
+// }
 
 Vue.mixin({
   methods: {

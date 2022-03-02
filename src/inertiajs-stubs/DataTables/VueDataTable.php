@@ -35,7 +35,9 @@ class VueDataTable {
         $this->isInertia = true;
         $this->showActionsView = false;
         return Inertia::render($view,
-            array_merge(['datatable' => $this->getData()], $data)    
+            array_merge([
+                'datatable' => !request()->has('noData') ? $this->getData() : null
+            ], $data)    
         );
     }
 
@@ -48,8 +50,7 @@ class VueDataTable {
             'isInertia' => $this->isInertia,
             'inertiaView' => $this->inertiaView ?? $pluralModelName,
             'query' => $this->buildQuery(),
-            'model' => $this->model(),
-            'searchTerm' => request()->search
+            'model' => $this->model()
         ];
     }
 
@@ -83,12 +84,7 @@ class VueDataTable {
         $modelsFolder = substr($model, 0, strrpos($model, "\\")+1);
         $keyWord = "%$search%";
         $searchFields = array_diff($searchFields, $makedModel->datatbleSearchIgnore ?: []);
-        $searchFields = array_map(
-            "unserialize",
-            array_unique(array_map('serialize', array_merge($searchFields, $makedModel->datatbleSearchCustomRelations ?: [])))
-        );
-        // dd($searchFields);
-        $query->where(function($query) use ($searchFields, $keyWord, $modelsFolder) {
+        $query->where(function($query) use ($searchFields, $keyWord, $modelsFolder, $makedModel) {
             foreach($searchFields as $index => $field) {
                 $operator = $index != 0 ? 'or' : '';
                 $isRelationArray = is_array($field);
@@ -105,7 +101,7 @@ class VueDataTable {
                     if (file_exists(app_path("$relationModelPath.php"))) {
                         $relationModel = app()->make($relationModelClass);
                         $query->{$operator . 'whereHas'}($relationName, function($q) use ($keyWord, $relationModel) {
-                            foreach(($relationModel->fillable ?: []) as $index => $column) {
+                            foreach($relationModel->fillable as $index => $column) {
                                 $operator = $index != 0 ? 'or' : '';
                                 $q->{$operator . 'whereRaw'}(DB::raw("LOWER({$column}) LIKE ?"), [$keyWord]);
                             }

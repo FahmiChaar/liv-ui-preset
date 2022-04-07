@@ -11,7 +11,7 @@ This preset scaffolding removes the manual steps required to get up and running 
 ```json
 "repositories": [
     {
-        "url": "https://github.com/FahmiChaar/liv-ui-perset.git",
+        "url": "https://github.com/FahmiChaar/liv-ui-preset.git",
         "type": "git"
     }
 ],

@@ -1,0 +1,5 @@
+<!-- 'Boolean FIELD_NAME_TITLE$ Field' checked by default -->
+<v-switch 
+    name='$FIELD_NAME$' 
+    v-model="form.$FIELD_NAME$"
+></v-switch>

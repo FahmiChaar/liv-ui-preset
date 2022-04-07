@@ -1,0 +1,14 @@
+{!! Form::open(['route' => ['$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.destroy', $item->$PRIMARY_KEY_NAME$], 'method' => 'delete']) !!}
+<div class="datatables-actions">
+    <v-btn color="primary" small icon text href="{{ route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.show', $item->$PRIMARY_KEY_NAME$) }}">
+        <i class="material-icons">remove_red_eye</i>
+    </v-btn>
+    <v-btn color="info" small icon text href="{{ route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.edit', $item->$PRIMARY_KEY_NAME$) }}">
+        <i class="material-icons">edit</i>
+    </v-btn>
+    <v-btn text icon small color="danger" type="submit" 
+        onclick="return confirm('Are you sure ?')">
+        <v-icon>delete</v-icon>
+    </v-btn>
+</div>
+{!! Form::close() !!}

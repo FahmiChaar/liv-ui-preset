@@ -1,0 +1,1 @@
+<v-radio v-model="form.$FIELD_NAME$" :label="__('dashboard.fields.$FIELD_NAME$')"></v-radio> 

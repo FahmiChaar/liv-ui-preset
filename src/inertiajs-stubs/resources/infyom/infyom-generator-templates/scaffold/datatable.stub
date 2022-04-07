@@ -1,0 +1,28 @@
+<?php
+
+namespace $NAMESPACE_DATATABLES$;
+
+use $NAMESPACE_MODEL$\$MODEL_NAME$;
+
+class $MODEL_NAME$DataTable extends VueDataTable {
+
+    protected $rowPerPage = 10;
+
+    public function query() {
+        return $MODEL_NAME$::query();
+    }
+
+    public function model()
+    {
+        return $MODEL_NAME$::class;
+    }
+
+    protected function getColumns() {
+        return [
+            ['value'=> 'id', 'text'=> 'id', 'visible'=> false],
+            $DATATABLE_COLUMNS$,
+            ['value' => 'actions', 'text' => __('dashboard.fields.actions'), 'sortable'=> false]
+        ];
+    }
+
+}

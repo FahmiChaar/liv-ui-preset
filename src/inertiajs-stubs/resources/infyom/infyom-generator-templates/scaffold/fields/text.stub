@@ -1,0 +1,9 @@
+<v-text-field
+    :label="__('dashboard.fields.$FIELD_NAME$')"
+    type="text"
+    :error-messages="!form.$FIELD_NAME$ && form.errors.$FIELD_NAME$ ? form.errors.$FIELD_NAME$ : null"
+    v-model="form.$FIELD_NAME$"
+    class="w-full"
+    outlined
+    name="$FIELD_NAME$"
+></v-text-field>

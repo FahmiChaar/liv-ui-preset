@@ -1,0 +1,2 @@
+<!-- 'bootstrap / Toggle Switch $FIELD_NAME_TITLE$ Field' -->
+<v-switch name='$FIELD_NAME$' v-model="form.$FIELD_NAME$" label='$FIELD_NAME_TITLE$ : '>

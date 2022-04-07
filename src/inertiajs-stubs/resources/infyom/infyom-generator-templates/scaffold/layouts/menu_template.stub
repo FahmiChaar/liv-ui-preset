@@ -1,0 +1,9 @@
+<v-list-item ripple href="{!! route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index') !!}" class="{{ Request::is('*$MODEL_NAME_PLURAL_CAMEL$*') ? 'v-list-item--active primary--text' : '' }}">
+    <v-list-item-icon>
+        <v-icon>dashboard</v-icon>
+    </v-list-item-icon>
+
+    <v-list-item-content>
+        <v-list-item-title>{{ trans('dashboard.models.$MODEL_NAME_PLURAL_SNAKE$') }}</v-list-item-title>
+    </v-list-item-content>
+</v-list-item>

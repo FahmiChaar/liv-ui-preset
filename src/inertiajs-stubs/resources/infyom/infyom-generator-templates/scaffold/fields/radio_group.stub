@@ -1,0 +1,4 @@
+<!-- $FIELD_NAME_TITLE$ Field -->
+<v-radio-group :mandatory="false">
+    <v-radio v-model="form.$FIELD_NAME$" :label="__('dashboard.fields.$FIELD_NAME$')"></v-radio> 
+</v-radio-group>

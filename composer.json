@@ -1,5 +1,5 @@
 {
-  "name": "laravel-frontend-presets/inertiajs",
+  "name": "liv/liv",
   "description": "A Laravel frontend preset to get you up and running with Inertia.js and Vuetify",
   "keywords": ["laravel", "preset", "inertiajs"],
   "type": "library",
@@ -11,20 +11,21 @@
     }
   ],
   "require": {
-    "laravel/ui": "^2.0"
+    "infyomlabs/laravel-generator": "8.0.x-dev",
+    "doctrine/dbal": "^3.3"
   },
   "require-dev": {
     "orchestra/testbench": "^3.8"
   },
   "autoload": {
     "psr-4": {
-      "LaravelFrontendPresets\\InertiaJsPreset\\": "src/"
+      "Liv\\InertiaJsPreset\\": "src/"
     }
   },
   "extra": {
     "laravel": {
       "providers": [
-        "LaravelFrontendPresets\\InertiaJsPreset\\InertiaJsPresetServiceProvider"
+        "Liv\\InertiaJsPreset\\InertiaJsPresetServiceProvider"
       ]
     }
   }

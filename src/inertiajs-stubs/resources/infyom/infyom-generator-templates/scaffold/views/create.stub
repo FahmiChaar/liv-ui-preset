@@ -1,0 +1,46 @@
+<template>
+  <div>
+    <breadcrumbs :items="breadcrumbsItems"/>
+    <div class="bg-white rounded-md shadow overflow-hidden">
+      <form @submit.prevent="store">
+        <div class="p-8">
+          $FIELDS$
+          <div class="pt-2 flex justify-start items-center">
+            <v-btn :loading="form.processing" color="primary" type="submit" class="capitalize">{{__('dashboard.buttons.save')}}</v-btn>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script>
+
+import AppLayout from '../../Layouts/AppLayout.vue'
+export default {
+    layout: AppLayout,
+    remember: 'form',
+    props: ['$MODEL_NAME_CAMEL$'],
+    data() {
+    return {
+      breadcrumbsItems: [
+        { text: '$MODEL_NAME_PLURAL_SNAKE$', href: `${route('dashboard.users.index')}` },
+        { text: (this.$MODEL_NAME_CAMEL$ ? 'Modifier' : 'Ajouter') }
+      ],
+      form: this.$inertia.form({
+
+        ...this.$MODEL_NAME_CAMEL$
+      }),
+    }
+  },
+  methods: {
+    store() {
+      if (this.form.id) {
+        this.form.patch(this.route("$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.update", this.form.id));
+      }else {
+        this.form.post(this.route("$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.store"));
+      }
+    },
+  },
+}
+</script>

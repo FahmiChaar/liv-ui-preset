@@ -1,0 +1,7 @@
+<!-- $FIELD_NAME_TITLE$ Field -->
+<v-checkbox 
+    label='$FIELD_NAME_TITLE$' 
+    name="$FIELD_NAME$"
+    :error-messages="form.errors.$FIELD_NAME$"
+    v-model="form.$FIELD_NAME$"
+></v-checkbox>

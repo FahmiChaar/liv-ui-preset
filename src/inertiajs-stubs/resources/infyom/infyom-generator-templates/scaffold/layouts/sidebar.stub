@@ -1,0 +1,24 @@
+<v-navigation-drawer
+  v-model="drawer"
+  absolute
+  app
+  :right="appLocal == 'ar'"
+  :clipped="$vuetify.breakpoint.mdAndUp"
+  :mini-variant="$vuetify.breakpoint.xsOnly">
+  <v-list dense nav class="py-0" >
+    <v-list-item two-line :class="$vuetify.breakpoint.xsOnly && 'px-0'">
+      <v-list-item-avatar>
+        <img src="{{ asset('/images/logo.png') }}">
+      </v-list-item-avatar>
+
+      <v-list-item-content>
+        <v-list-item-title>{{ Auth::user()->name }}</v-list-item-title>
+        <v-list-item-subtitle>Subtext</v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
+
+    <v-divider></v-divider>
+
+    @include('dashboard.layouts.menu')
+  </v-list>
+</v-navigation-drawer>

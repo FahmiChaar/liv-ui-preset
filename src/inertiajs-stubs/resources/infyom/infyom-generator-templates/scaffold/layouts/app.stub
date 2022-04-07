@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}" lang="{{ app()->getLocale() }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'Miqat') }}</title>
+
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+
+    <!-- Styles -->
+    @include('dashboard.layouts.styles')
+    @yield('css')
+    
+</head>
+<body>
+    <div id="vue-app">
+        <div id="swup">
+            <modal-stack></modal-stack>
+            <v-app id="inspire" light v-cloak>
+                @auth
+                    @include('dashboard.layouts.sidebar')
+                @endauth
+                @include('dashboard.layouts.toolbar')
+                <div class="transition-fade">
+                    <v-main>
+                        <v-container>
+                            @yield('content')
+                        </v-container>
+                    </v-main>
+                </div>
+            </v-app>
+        </div>
+    </div>
+
+    @include('dashboard.layouts.scripts')
+    @yield('scripts')
+</body>
+</html>

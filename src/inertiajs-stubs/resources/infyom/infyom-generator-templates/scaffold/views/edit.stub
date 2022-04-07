@@ -1,0 +1,46 @@
+<template>
+    <div>
+        <h1 class="mb-8 font-bold text-3xl">
+            <inertia-link class="text-indigo-400 hover:text-indigo-600" :href="route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.store')">{{__('dashboard.models.$MODEL_NAME_SNAKE$')}}</inertia-link>
+            <span class="text-indigo-400 font-medium">/</span> Create
+        </h1>
+        <div class="bg-white rounded-md shadow overflow-hidden">
+            <form @submit.prevent="store">
+                <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
+                    $FIELDS$
+                </div>
+                <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 flex justify-end items-center">
+                    <v-btn> :loading="form.processing" color="primary" type="submit">{{ __('dashboard.buttons.create') }} {{ __('dashboard.models.$MODEL_NAME_SNAKE$') }}</v-btn>
+                </div>
+            </form>
+        </div>
+    </div>
+</template>
+
+<script>
+
+import AppLayout from '../../Layouts/AppLayout.vue'
+export default {
+    layout: AppLayout,
+    remember: 'form',
+    data() {
+        return {
+            form: this.$inertia.form({
+                name: null,
+                email: null,
+                phone: null,
+                address: null,
+                city: null,
+                region: null,
+                country: null,
+                postal_code: null,
+            }),
+        }
+    },
+    methods: {
+        store() {
+        this.form.post(this.route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.store'))
+        },
+    },
+}
+</script>

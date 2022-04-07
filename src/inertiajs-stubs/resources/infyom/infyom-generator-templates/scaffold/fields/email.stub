@@ -1,0 +1,8 @@
+<!-- $FIELD_NAME_TITLE$ Field -->
+<v-text-field
+    :label="__('dashboard.fields.$FIELD_NAME$')"
+    type="email"
+    :error-messages="!form.$FIELD_NAME$ && form.errors.$FIELD_NAME$ ? form.errors.$FIELD_NAME$ : null"
+    v-model="form.$FIELD_NAME$"
+    name="$FIELD_NAME$"
+></v-text-field>

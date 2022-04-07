@@ -1,11 +1,11 @@
 <?php
 
-namespace LaravelFrontendPresets\InertiaJsPreset;
+namespace Liv\InertiaJsPreset;
 
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
-use Laravel\Ui\Presets\Preset;
+use Liv\InertiaJsPreset\Commands\Preset;
 
 class InertiaJsPreset extends Preset
 {
@@ -24,6 +24,7 @@ class InertiaJsPreset extends Preset
         static::updateGitignore();
         static::scaffoldComponents();
         static::scaffoldRoutes();
+        static::infyomResources();
         static::removeNodeModules();
     }
 
@@ -70,6 +71,12 @@ class InertiaJsPreset extends Preset
         copy(__DIR__.'/inertiajs-stubs/resources/css/app.css', resource_path('css/app.css'));
         // copy(__DIR__.'/inertiajs-stubs/resources/sass/app.scss', resource_path('sass/app.scss'));
         // copy(__DIR__.'/inertiajs-stubs/resources/sass/_nprogress.scss', resource_path('sass/_nprogress.scss'));
+    }
+    
+    public function infyomResources() {
+        // copy(__DIR__.'/inertiajs-stubs/config/infyom/laravel_generator.php', base_path('config/infyom/laravel_generator.php'));
+        (new Filesystem)->copyDirectory(__DIR__.'/inertiajs-stubs/config/infyom', config_path('infyom'));
+        (new Filesystem)->copyDirectory(__DIR__.'/inertiajs-stubs/resources/infyom', resource_path('infyom'));
     }
 
     protected static function updateWelcomePage()

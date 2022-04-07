@@ -1,0 +1,7 @@
+<!-- $FIELD_NAME_TITLE$ Field -->
+<date-picker
+    label="$FIELD_NAME_TITLE$"
+    name="$FIELD_NAME$"
+    :value="form.$FIELD_NAME$"
+>
+</date-picker>

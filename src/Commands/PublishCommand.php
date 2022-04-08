@@ -27,7 +27,7 @@ class PublishCommand extends Command
      */
     public function handle()
     {
-        (new Filesystem)->copyDirectory(__DIR__.'/inertiajs-stubs/resources/infyom', resource_path('infyom'));
+        (new Filesystem)->copyDirectory(dirname(__DIR__, 1).'/inertiajs-stubs/resources/infyom', resource_path('infyom'));
         $this->info('UI scaffolding published successfully.');
     }
 }

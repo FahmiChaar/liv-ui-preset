@@ -35,11 +35,7 @@ export default {
   },
   methods: {
     store() {
-      if (this.form.id) {
-        this.form.patch(this.route("$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.update", this.form.id));
-      }else {
-        this.form.post(this.route("$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.store"));
-      }
+      this.form.post(this.route("$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.store"));
     },
   },
 }

@@ -44,9 +44,12 @@ class $MODEL_NAME$Controller extends Controller
      */
     public function store(Create$MODEL_NAME$Request $request)
     {
-        $input = $request->all();
+        $model = $MODEL_NAME$::updateOrCreate(
+            ['id' => $request->id],
+            $request->all()          
+        );
 
-        $$MODEL_NAME_CAMEL$ = $MODEL_NAME$::create($input);
+        //$model->addFile(null, 'collection', true, 'requestName');
 
         Flash::success('$MODEL_NAME_HUMAN$ saved successfully.');
 

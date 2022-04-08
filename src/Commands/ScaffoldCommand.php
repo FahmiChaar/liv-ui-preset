@@ -70,6 +70,7 @@ class ScaffoldCommand extends Command
         $this->filesystem->put($createPath, $file);
         $this->filesystem->move($createPath, $modePageDirectory.'/Create.vue');
         $this->filesystem->move($modePageDirectory.'/index.blade.php', $modePageDirectory.'/Index.vue');
+        rename(resource_path('js/Pages/'.Str::lower($model)), $modePageDirectory);
         $allBladeFile = $this->filesystem->glob(resource_path('js/Pages/'.$model.'/*.blade.php'));
         $this->filesystem->delete($allBladeFile);
         $this->info('Infyom views refactoring completed');

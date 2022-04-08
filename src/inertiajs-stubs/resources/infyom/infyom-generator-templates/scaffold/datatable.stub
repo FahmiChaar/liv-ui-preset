@@ -3,13 +3,20 @@
 namespace $NAMESPACE_DATATABLES$;
 
 use $NAMESPACE_MODEL$\$MODEL_NAME$;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class $MODEL_NAME$DataTable extends VueDataTable {
 
     protected $rowPerPage = 10;
 
     public function query() {
-        return $MODEL_NAME$::query();
+        $sortField = request()->get('sort');
+        $query = QueryBuilder::for($MODEL_NAME$::query());
+        if ($sortField) {
+            return $query->allowedSorts($sortField);
+        }
+        $query->defaultSort('-updated_at');
+        return $query;
     }
 
     public function model()

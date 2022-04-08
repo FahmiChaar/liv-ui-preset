@@ -25,7 +25,7 @@ export default {
     return {
       breadcrumbsItems: [
         { text: '$MODEL_NAME_PLURAL_SNAKE$', href: `${route('dashboard.$MODEL_NAME_PLURAL_SNAKE$.index')}` },
-        { text: (this.$MODEL_NAME_CAMEL$ ? 'Modifier' : 'Ajouter') }
+        { text: (this.$MODEL_NAME_CAMEL$ && this.$MODEL_NAME_CAMEL$.id ? 'Modifier' : 'Ajouter') }
       ],
       form: this.$inertia.form({
 

@@ -53,7 +53,7 @@ class $MODEL_NAME$Controller extends Controller
 
         Flash::success('$MODEL_NAME_HUMAN$ saved successfully.');
 
-        return Inertia::location(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+        return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
     }
 
     /**
@@ -70,7 +70,7 @@ class $MODEL_NAME$Controller extends Controller
         if (empty($$MODEL_NAME_CAMEL$)) {
             Flash::error('$MODEL_NAME_HUMAN$ not found');
 
-            return Inertia::location(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
         }
 
         return Inertia::render('$MODEL_NAME_PLURAL_CAMEL$/Show')->with('$MODEL_NAME_CAMEL$', $$MODEL_NAME_CAMEL$);
@@ -90,7 +90,7 @@ class $MODEL_NAME$Controller extends Controller
         if (empty($$MODEL_NAME_CAMEL$)) {
             Flash::error('$MODEL_NAME_HUMAN$ not found');
 
-            return Inertia::location(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
         }
 
         return Inertia::render('$MODEL_NAME_PLURAL_CAMEL$/Create')->with('$MODEL_NAME_CAMEL$', $$MODEL_NAME_CAMEL$);
@@ -111,7 +111,7 @@ class $MODEL_NAME$Controller extends Controller
         if (empty($$MODEL_NAME_CAMEL$)) {
             Flash::error('$MODEL_NAME_HUMAN$ not found');
 
-            return Inertia::location(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
         }
 
         $$MODEL_NAME_CAMEL$->fill($request->all());
@@ -119,7 +119,7 @@ class $MODEL_NAME$Controller extends Controller
 
         Flash::success('$MODEL_NAME_HUMAN$ updated successfully.');
 
-        return Inertia::location(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+        return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
     }
 
     /**
@@ -138,13 +138,13 @@ class $MODEL_NAME$Controller extends Controller
         if (empty($$MODEL_NAME_CAMEL$)) {
             Flash::error('$MODEL_NAME_HUMAN$ not found');
 
-            return Inertia::location(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
         }
 
         $$MODEL_NAME_CAMEL$->delete();
 
         Flash::success('$MODEL_NAME_HUMAN$ deleted successfully.');
 
-        return Inertia::location(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+        return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
     }
 }

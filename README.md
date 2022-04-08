@@ -34,6 +34,11 @@ This preset scaffolding removes the manual steps required to get up and running 
 
 `php artisan liv:scaffold User --tableName=users`
 
+## Publish scaffold
+- Publish infyom scaffold (stubs)
+
+`php artisan liv:publish`
+
 ## More
 
 Learn more about Inertia.js from [@reinink](https://twitter.com/reinink)'s [introductory blog post](https://reinink.ca/articles/introducing-inertia-js).

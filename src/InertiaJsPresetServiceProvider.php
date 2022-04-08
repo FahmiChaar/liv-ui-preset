@@ -15,6 +15,7 @@ class InertiaJsPresetServiceProvider extends ServiceProvider
         $this->commands([
             Commands\UiCommand::class,
             Commands\ScaffoldCommand::class,
+            Commands\PublishCommand::class,
         ]);
     }
 }

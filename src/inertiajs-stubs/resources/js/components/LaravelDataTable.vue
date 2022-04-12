@@ -48,19 +48,29 @@
                             <template v-if="(datatable && datatable.isInertia || datatable && datatable.inertiaView) && !hideActions">
                                 <v-tooltip left>
                                     <template v-slot:activator="{ on, attrs }">
-                                        <inertia-link v-if="showAction('show')" as="v-btn" icon small color="default" :href="route('dashboard.'+datatable.inertiaView+'.show', item.id)">
-                                            <v-icon v-bind="attrs" v-on="on">remove_red_eye</v-icon>
-                                        </inertia-link>
+                                        <template v-if="showAction('show')">
+                                            <v-btn icon small color="default" v-if="showActionModal('show')" @click="showPageAsModal(route('dashboard.'+datatable.inertiaView+'.show', item.id)+(showParams || ''), item, 'show')" :loading="item.showLoading">
+                                                <v-icon v-bind="attrs" v-on="on">remove_red_eye</v-icon>
+                                            </v-btn>
+                                            <inertia-link v-else as="v-btn" icon small color="default" :href="route('dashboard.'+datatable.inertiaView+'.show', item.id)+(showParams || '')">
+                                                <v-icon v-bind="attrs" v-on="on">remove_red_eye</v-icon>
+                                            </inertia-link>
+                                        </template>
                                     </template>
-                                    <span>Show details</span>
+                                    <span>Afficher les détails</span>
                                 </v-tooltip>
                                 <v-tooltip left>
                                     <template v-slot:activator="{ on, attrs }">
-                                        <inertia-link v-if="showAction('edit')" as="v-btn" icon small color="default" :href="route('dashboard.'+datatable.inertiaView+'.edit', item.id)">
-                                            <v-icon v-bind="attrs" v-on="on">edit</v-icon>
-                                        </inertia-link>
+                                        <template v-if="showAction('edit')">
+                                            <v-btn icon small color="default" v-if="showActionModal('edit')" @click="showPageAsModal(route('dashboard.'+datatable.inertiaView+'.edit', item.id)+(editParams || ''), item, 'edit')" :loading="item.editLoading">
+                                                <v-icon v-bind="attrs" v-on="on">edit</v-icon>
+                                            </v-btn>
+                                            <inertia-link v-else as="v-btn" icon small color="default" :href="route('dashboard.'+datatable.inertiaView+'.edit', item.id)+(editParams || '')">
+                                                <v-icon v-bind="attrs" v-on="on">edit</v-icon>
+                                            </inertia-link>
+                                        </template>
                                     </template>
-                                    <span>Edit</span>
+                                    <span>Modifier</span>
                                 </v-tooltip>
                                 <v-tooltip left>
                                     <template v-slot:activator="{ on, attrs }">
@@ -68,7 +78,7 @@
                                             <v-icon v-bind="attrs" v-on="on">delete</v-icon>
                                         </v-btn>
                                     </template>
-                                    <span>Delete</span>
+                                    <span>Supprimer</span>
                                 </v-tooltip>
                             </template>
                             <slot name="extra-actions" :item="item"></slot>
@@ -95,10 +105,13 @@ export default {
         'saveOrderUrl',
         'url',
         'createRoute',
+        'showParams',
+        'editParams',
         'createText',
         'hideSearche',
         'hideCreate',
         'hideActions',
+        'actionsModal',
         'actions',
         'searchTerm'
     ],
@@ -227,6 +240,21 @@ export default {
             }else {
                 return true
             }
+        },
+        showActionModal(action) {
+            if (this.actionsModal && this.actionsModal.length) {
+                return this.actionsModal.indexOf(action) > -1
+            }else if (this.actionsModal && !this.actionsModal.length) {
+                return false
+            }else {
+                return false
+            }
+        },
+        async showPageAsModal(url, item, action) {
+            const loadingKey = `${action}Loading`
+            this.$set(item, loadingKey, true)
+            await this.$inertia.visitInModal(url)
+            this.$set(item, loadingKey, false)
         },
         replaceParams(params) {
             const filterParams = this.getParams('http://test.com?'+this.filters)

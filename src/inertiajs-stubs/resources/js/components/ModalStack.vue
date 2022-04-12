@@ -3,12 +3,10 @@
         <transition-group name="list" tag="div" v-on:after-leave="afterCloseAnimationDone">
             <div class="inner-wrapper" v-for="(modal, index) in modalStack" :key="modal.component + '-' + index">
                 <div class="backdrop" @click="closeModal(modal.component, modal.options.persist)"></div>
-                <div class="modal-container">
-                    <component 
-                        :class="{'modal-persist-animated': persistAnimation, 'overflow-hidden': true}"
-                        :style="{'max-width': modal.options.maxWidth}"
-                        :is="modal.component" v-bind="modal.props">
-                    </component>
+                <div class="modal-container" 
+                    :class="{'modal-persist-animated': persistAnimation}"
+                    :style="{'max-width': modal.options.maxWidth}">
+                    <component :is="modal.component" v-bind="modal.props"></component>
                 </div>
             </div>
         </transition-group>
@@ -32,19 +30,46 @@ export default {
             hasModals: false,
             persistAnimation: false,
             persistAnimationTimeout: null,
-            customResolve: null
+            closeModalOnInertiaSuccess: true,
+            removeBeforeEventListener: () => {}
         }
+    },
+    beforeMount() {
+        this.$inertia.visitInModal = (url, closeOnSuccess = true) => {
+            this.closeModalOnInertiaSuccess = closeOnSuccess;
+            this.visitInModal(url);
+        }
+        this.$inertia.on("success", (event) => {
+            this.$root.$emit('modal:inertia:success', event);
+            // remove the 'X-Inertia-Modal' and 'X-Inertia-Modal-Redirect-Back' headers for future requests
+            this.removeBeforeEventListener()
+            if (this.closeModalOnInertiaSuccess) {
+                this.closeModal();
+            }
+        })
     },
     created: function() {
         document.addEventListener("keydown", (e) => {
-            if (this.hasModals && ((e.key != undefined && e.key == 'Escape') || e.keyCode == 27)) {
+            if (this.hasModals && e.keyCode == 27) {
                 const activeModal = this.modalStack[this.modalStack.length-1]
                 this.closeModal(activeModal.component, activeModal.options.persist)
             }
         })
-
-        this.$root.$on('modal::show', ({data, resolve}) => {
-            this.customResolve = resolve
+        this.$root.$on('modal::show', data => {
+            this.showModal(data)
+        })
+        this.$root.$on('modal::close', component => {
+            this.closeModal(component)
+        })
+    },
+    methods: {
+        afterCloseAnimationDone() {
+            if (!this.modalStack.length) {
+                this.hasModals = false
+                document.removeEventListener("keydown", (e) => {})
+            }
+        },
+        showModal(data) {
             if (typeof data === 'string') {
                 this.modalStack.push({component: data, props: {}, options: {}})
                 this.hasModals = true
@@ -55,52 +80,66 @@ export default {
                 this.hasModals = true
             }else {
                 this.hasModals = false
-                throw 'Data passed to Modal component should be of type string|object -> get ' + (typeof data)
-            }
-        })
-        this.$root.$on('modal::close', async ({component, data}) => {
-            await this.closeModal(component)
-            this.customResolve(data)
-        })
-    },
-    methods: {
-        afterCloseAnimationDone() {
-            if (!this.modalStack.length) {
-                this.hasModals = false
-                document.removeEventListener("keydown", (e) => {})
+                throw 'Data passed to Modal component should be of type string|object'
             }
         },
         closeModal(component, persist) {
-            return new Promise((resolve)=> {
-                if (!persist) {
-                    if (component) {
-                        // I reverse modalStack to findLastIndex
-                        const componentIndex = this.modalStack.reverse().findIndex(m => m.component === component)
-                        if (componentIndex > -1) {
-                            // const index = this.modalStack.length - componentIndex
-                            this.modalStack.splice(componentIndex, 1)
-                            resolve()
-                        }else {
-                            if (this.modalStack.length == 1) {
-                                this.modalStack = []
-                            }else {
-                                throw `No modal mounted this component, ${component}`
-                            }
-                        }
+            if (!persist) {
+                if (component) {
+                    // I reverse modalStack to findLastIndex
+                    const componentIndex = this.modalStack.reverse().findIndex(m => m.component === component)
+                    if (componentIndex > -1) {
+                        // const index = this.modalStack.length - componentIndex
+                        this.modalStack.splice(componentIndex, 1)
                     }else {
-                        this.modalStack.reverse().splice(0, 1)
-                        resolve()
+                        if (this.modalStack.length == 1) {
+                            this.modalStack = []
+                        }else {
+                            throw `No modal mounted this component, ${component}`
+                        }
                     }
                 }else {
-                    if (this.persistAnimationTimeout) {
-                        this.persistAnimation = false
-                        clearTimeout(this.persistAnimationTimeout)
-                    }
-                    this.persistAnimation = true
-                    this.persistAnimationTimeout = setTimeout(() => {
-                        this.persistAnimation = false
-                    }, 160);
+                    this.modalStack.reverse().splice(0, 1)
                 }
+            }else {
+                if (this.persistAnimationTimeout) {
+                    this.persistAnimation = false
+                    clearTimeout(this.persistAnimationTimeout)
+                }
+                this.persistAnimation = true
+                this.persistAnimationTimeout = setTimeout(() => {
+                    this.persistAnimation = false
+                }, 160);
+            }
+        },
+        visitInModal(url) {
+            return new Promise(async (resolve) => {
+                const Inertia = this.$inertia
+                const { data: { component, props, options } } = await axios({
+                    method: 'get',
+                    url,
+                    headers: {
+                        Accept: "text/html, application/xhtml+xml",
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-Inertia": true,
+                        "X-Inertia-Modal": true,
+                        "X-Inertia-Version": this.$page.version,
+                    },
+                })
+                const resolvedComponent = await Inertia.resolveComponent(component)
+                this.removeBeforeEventListener = Inertia.on("before", (event) => {
+                    // make sure the backend knows we're requesting from within a modal
+                    event.detail.visit.headers["X-Inertia-Modal"] = true;
+                    // event.detail.visit.headers[
+                    //     "X-Inertia-Modal-Redirect-Back"
+                    // ] = true;
+                })
+                this.showModal({
+                    component: resolvedComponent,
+                    props,
+                    options
+                })
+                resolve(true)
             })
         }
     },
@@ -110,7 +149,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
     .list-enter-active, .list-leave-active {
         transition: all .4s;
     }
@@ -157,31 +196,16 @@ export default {
     .modal-container {
         position: relative;
         z-index: 21;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         background: transparent;
-        max-height: 90%;
         max-width: 80%;
+        max-height: 90%;
         width: 80%;
-        height: 100%;
+        box-shadow: 0 11px 15px -7px rgba(0,0,0,.2), 0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12);
         border-radius: 2px;
         margin: 24px;
-        overflow-y: hidden;
+        overflow-y: auto;
         pointer-events: auto;
         transition: all 0.4s;
-        /* box-shadow: 0 11px 15px -7px rgba(0,0,0,.2), 0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12); */
-    }
-    .modal-container .v-card {
-        display: flex;
-        flex-direction: column;
-        height: auto;
-        width: 100%;
-        max-height: 100%;
-    }
-    .modal-container .v-card__text {
-        max-height: 90%;
-        overflow-y: auto;
     }
     .modal-persist-animated {
         -webkit-animation-duration: .15s;

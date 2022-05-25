@@ -33,6 +33,7 @@ class HandleInertiaRequests extends Middleware
         $response = parent::handle($request, $next);
 
         if ($response instanceof RedirectResponse && (bool) $request->header('X-Inertia-Modal-Redirect-Back')) {
+            $request->headers->remove('X-Inertia-Modal-Redirect-Back');
             return back(303);
         }
 

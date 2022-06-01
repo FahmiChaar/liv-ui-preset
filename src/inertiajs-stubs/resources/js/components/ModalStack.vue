@@ -48,6 +48,10 @@ export default {
                 this.closeModal();
             }
         })
+        this.$inertia.on("error", (event) => {
+            this.$root.$emit('modal:inertia:error', event);
+            this.showErrors(event.detail?.errors)
+        })
     },
     created: function() {
         document.addEventListener("keydown", (e) => {
@@ -143,6 +147,15 @@ export default {
                 })
                 resolve(true)
             })
+        },
+        showErrors(errors) {
+            if (errors && Object.keys(errors).length) {
+                let messages = ''
+                for (let key in errors) {
+                    messages += errors[key] + '\n'
+                }
+                this.$toast.error(messages)
+            }
         }
     },
     destroyed: function() {

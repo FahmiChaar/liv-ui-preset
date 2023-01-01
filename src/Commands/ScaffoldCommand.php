@@ -60,34 +60,46 @@ class ScaffoldCommand extends Command
         ]);
         $modelFolderName = $tableName ? Str::studly($tableName) : $modelPlural;
         $this->refactoringInfyomViews($modelFolderName, $modelPlural);
+        $this->refactoringInfyomController($modelPlural);
     }
 
     private function refactoringInfyomViews($modelFolderName, $modelPlural) {
         $modelPageDirectory = resource_path('js/Pages/'.$modelFolderName);
         rename(resource_path('js/Pages/'.Str::snake($modelPlural)), $modelPageDirectory);
-        $createFile = $this->getFileContent($modelFolderName, 'create');
-        $fields = $this->getFileContent($modelFolderName, 'fields');
+        $createFile = $this->getViewFileContent($modelFolderName, 'create');
+        $fields = $this->getViewFileContent($modelFolderName, 'fields');
         $file = str_replace('$FIELDS$', $fields, $createFile);
         $createPath = $modelPageDirectory.'/create.blade.php';
         $this->filesystem->put($createPath, $file);
         $this->filesystem->move($createPath, $modelPageDirectory.'/Create.vue');
         $this->filesystem->move($modelPageDirectory.'/index.blade.php', $modelPageDirectory.'/Index.vue');
-        // rename(resource_path('js/Pages/'.Str::lower($modelFolderName)), $modelPageDirectory);
         $allBladeFile = $this->filesystem->glob(resource_path('js/Pages/'.$modelFolderName.'/*.blade.php'));
         $this->filesystem->delete($allBladeFile);
         $this->info('Infyom views refactoring completed');
     }
 
-    private function getFileContent($modelName, $viewName) {
-        // $snakeModelName = snake_case($modelName);
-        // if (str_contains($snakeModelName, '_')) {
-        //     $modelName = $snakeModelName
-        // }
+    private function refactoringInfyomController($modelPlural) {
+        $studlyModelName = Str::studly($modelPlural);
+        $controllerPath = app_path('Http/Controllers/Dashboard/'.$studlyModelName.'Controller.php');
+        $controllerContent = $this->getControllerFileContent($controllerPath, $modelPlural);
+        $file = str_replace($modelPlural.'/', $studlyModelName.'/', $controllerContent);
+        $this->filesystem->put($controllerPath, $file);
+    }
+
+    private function getViewFileContent($modelName, $viewName) {
         $directoryPath = resource_path('js/Pages/'.$modelName.'/');
         try {
             return $this->filesystem->get($directoryPath.$viewName.'.blade.php');
         } catch (\Exception $e) {
-            return $this->error('File not found => '. $e->getMessage());
+            return $this->error('View File not found => '. $e->getMessage());
+        }
+    }
+    
+    private function getControllerFileContent($controllerPath) {
+        try {
+            return $this->filesystem->get($filePath);
+        } catch (\Exception $e) {
+            return $this->error('Controller File not found => '. $e->getMessage());
         }
     }
 

@@ -51,6 +51,11 @@ class ScaffoldCommand extends Command
         $model = Str::studly($model);
         $modelPlural = Str::plural($model);
         $tableName = $this->option('tableName') ?: Str::plural(Str::snake($modelPlural));
+        $modelFolderName = $tableName ? Str::studly($tableName) : $modelPlural;
+        $modelPageDirectory = resource_path('js/Pages/'.$modelFolderName);
+        if (file_exists($modelPageDirectory)) {
+            $this->filesystem->deleteDirectory($modelPageDirectory);
+        }
         $this->call('infyom:scaffold', [
             'model' => $model,
             '--views' => 'index,create',
@@ -58,7 +63,6 @@ class ScaffoldCommand extends Command
             '--tableName' => $tableName,
             '--factory' => true,
         ]);
-        $modelFolderName = $tableName ? Str::studly($tableName) : $modelPlural;
         $this->refactoringInfyomViews($modelFolderName, $modelPlural);
         $this->refactoringInfyomController($modelPlural);
     }

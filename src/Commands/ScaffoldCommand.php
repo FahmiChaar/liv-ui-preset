@@ -89,7 +89,7 @@ class ScaffoldCommand extends Command
         $studlyModelName = Str::studly($model);
         $controllerPath = app_path('Http/Controllers/Dashboard/'.$studlyModelName.'Controller.php');
         $controllerContent = $this->getControllerFileContent($controllerPath);
-        $file = str_replace($modelPlural.'/', $studlyModelName.'/', $controllerContent);
+        $file = str_replace(Str::camel($modelPlural).'/', $viewsFolderName.'/', $controllerContent);
         $this->filesystem->put($controllerPath, $file);
         $this->info('Infyom controller refactoring completed');
     }

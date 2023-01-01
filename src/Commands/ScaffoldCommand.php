@@ -69,8 +69,8 @@ class ScaffoldCommand extends Command
 
     private function refactoringInfyomViews($modelFolderName, $modelPlural) {
         $modelPageDirectory = resource_path('js/Pages/'.$modelFolderName);
-        $oldFlderPath = resource_path('js/Pages/'.Str::snake($modelPlural));
-        if (file_exists($oldFlderPath)) {
+        $oldFolderPath = resource_path('js/Pages/'.Str::snake($modelPlural));
+        if (file_exists($oldFolderPath)) {
             rename($oldFolderPath, $modelPageDirectory);
         }
         $createFile = $this->getViewFileContent($modelFolderName, 'create');

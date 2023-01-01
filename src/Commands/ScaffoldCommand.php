@@ -18,7 +18,7 @@ class ScaffoldCommand extends Command
 
     public function __construct(Filesystem $filesystem)
     {
-        // parent::__construct();
+        parent::__construct();
         $this->filesystem = $filesystem;
     }
 

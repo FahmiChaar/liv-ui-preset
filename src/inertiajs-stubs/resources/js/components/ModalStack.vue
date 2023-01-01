@@ -43,9 +43,14 @@ export default {
             this.$root.$emit('modal:inertia:success', event);
             // remove the 'X-Inertia-Modal' and 'X-Inertia-Modal-Redirect-Back' headers for future requests
             this.removeBeforeEventListener()
+           
             if (this.closeModalOnInertiaSuccess) {
                 this.closeModal();
             }
+        })
+        this.$inertia.on("error", (event) => {
+            this.$root.$emit('modal:inertia:error', event);
+            this.showErrors(event.detail?.errors)
         })
     },
     created: function() {
@@ -85,6 +90,7 @@ export default {
         },
         closeModal(component, persist) {
             if (!persist) {
+                this.removeBeforeEventListener()
                 if (component) {
                     // I reverse modalStack to findLastIndex
                     const componentIndex = this.modalStack.reverse().findIndex(m => m.component === component)
@@ -130,9 +136,9 @@ export default {
                 this.removeBeforeEventListener = Inertia.on("before", (event) => {
                     // make sure the backend knows we're requesting from within a modal
                     event.detail.visit.headers["X-Inertia-Modal"] = true;
-                    // event.detail.visit.headers[
-                    //     "X-Inertia-Modal-Redirect-Back"
-                    // ] = true;
+                    event.detail.visit.headers[
+                        "X-Inertia-Modal-Redirect-Back"
+                    ] = true;
                 })
                 this.showModal({
                     component: resolvedComponent,
@@ -141,6 +147,15 @@ export default {
                 })
                 resolve(true)
             })
+        },
+        showErrors(errors) {
+            if (errors && Object.keys(errors).length) {
+                let messages = ''
+                for (let key in errors) {
+                    messages += errors[key] + '\n'
+                }
+                this.$toast.error(messages)
+            }
         }
     },
     destroyed: function() {

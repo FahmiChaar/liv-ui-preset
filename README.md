@@ -39,6 +39,13 @@ This preset scaffolding removes the manual steps required to get up and running 
 
 `php artisan liv:publish`
 
+## Visite Modal
+- Visite Inertia page in modal
+
+```js
+this.$inertia.visitInModal(route('dashboard.cars.create'));
+```
+
 ## More
 
 Learn more about Inertia.js from [@reinink](https://twitter.com/reinink)'s [introductory blog post](https://reinink.ca/articles/introducing-inertia-js).

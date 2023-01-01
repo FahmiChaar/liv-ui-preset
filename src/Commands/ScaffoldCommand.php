@@ -18,7 +18,7 @@ class ScaffoldCommand extends Command
 
     public function __construct(Filesystem $filesystem)
     {
-        parent::__construct();
+        // parent::__construct();
         $this->filesystem = $filesystem;
     }
 
@@ -50,7 +50,7 @@ class ScaffoldCommand extends Command
         }
         $model = Str::studly($model);
         $modelPlural = Str::plural($model);
-        $tableName = $this->option('tableName') ?: Str::lower($modelPlural);
+        $tableName = $this->option('tableName') ?: Str::plural(Str::snake($modelPlural));
         $this->call('infyom:scaffold', [
             'model' => $model,
             '--views' => 'index,create',
@@ -58,25 +58,31 @@ class ScaffoldCommand extends Command
             '--tableName' => $tableName,
             '--factory' => true,
         ]);
-        $this->refactoringInfyomViews($modelPlural);
+        $modelFolderName = $tableName ? Str::studly($tableName) : $modelPlural;
+        $this->refactoringInfyomViews($modelFolderName, $modelPlural);
     }
 
-    private function refactoringInfyomViews($model) {
-        $modePageDirectory = resource_path('js/Pages/'.$model);
-        $createFile = $this->getFileContent($model, 'create');
-        $fields = $this->getFileContent($model, 'fields');
+    private function refactoringInfyomViews($modelFolderName, $modelPlural) {
+        $modelPageDirectory = resource_path('js/Pages/'.$modelFolderName);
+        rename(resource_path('js/Pages/'.Str::snake($modelPlural)), $modelPageDirectory);
+        $createFile = $this->getFileContent($modelFolderName, 'create');
+        $fields = $this->getFileContent($modelFolderName, 'fields');
         $file = str_replace('$FIELDS$', $fields, $createFile);
-        $createPath = $modePageDirectory.'/create.blade.php';
+        $createPath = $modelPageDirectory.'/create.blade.php';
         $this->filesystem->put($createPath, $file);
-        $this->filesystem->move($createPath, $modePageDirectory.'/Create.vue');
-        $this->filesystem->move($modePageDirectory.'/index.blade.php', $modePageDirectory.'/Index.vue');
-        rename(resource_path('js/Pages/'.Str::lower($model)), $modePageDirectory);
-        $allBladeFile = $this->filesystem->glob(resource_path('js/Pages/'.$model.'/*.blade.php'));
+        $this->filesystem->move($createPath, $modelPageDirectory.'/Create.vue');
+        $this->filesystem->move($modelPageDirectory.'/index.blade.php', $modelPageDirectory.'/Index.vue');
+        // rename(resource_path('js/Pages/'.Str::lower($modelFolderName)), $modelPageDirectory);
+        $allBladeFile = $this->filesystem->glob(resource_path('js/Pages/'.$modelFolderName.'/*.blade.php'));
         $this->filesystem->delete($allBladeFile);
         $this->info('Infyom views refactoring completed');
     }
 
     private function getFileContent($modelName, $viewName) {
+        // $snakeModelName = snake_case($modelName);
+        // if (str_contains($snakeModelName, '_')) {
+        //     $modelName = $snakeModelName
+        // }
         $directoryPath = resource_path('js/Pages/'.$modelName.'/');
         try {
             return $this->filesystem->get($directoryPath.$viewName.'.blade.php');

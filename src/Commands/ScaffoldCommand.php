@@ -105,7 +105,7 @@ class ScaffoldCommand extends Command
     
     private function getControllerFileContent($controllerPath) {
         try {
-            return $this->filesystem->get($filePath);
+            return $this->filesystem->get($controllerPath);
         } catch (\Exception $e) {
             return $this->error('Controller File not found => '. $e->getMessage());
         }

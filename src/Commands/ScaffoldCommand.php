@@ -65,7 +65,10 @@ class ScaffoldCommand extends Command
 
     private function refactoringInfyomViews($modelFolderName, $modelPlural) {
         $modelPageDirectory = resource_path('js/Pages/'.$modelFolderName);
-        rename(resource_path('js/Pages/'.Str::snake($modelPlural)), $modelPageDirectory);
+        $oldFlderPath = resource_path('js/Pages/'.Str::snake($modelPlural));
+        if (file_exists($oldFlderPath)) {
+            rename($oldFolderPath, $modelPageDirectory);
+        }
         $createFile = $this->getViewFileContent($modelFolderName, 'create');
         $fields = $this->getViewFileContent($modelFolderName, 'fields');
         $file = str_replace('$FIELDS$', $fields, $createFile);
@@ -84,6 +87,7 @@ class ScaffoldCommand extends Command
         $controllerContent = $this->getControllerFileContent($controllerPath, $modelPlural);
         $file = str_replace($modelPlural.'/', $studlyModelName.'/', $controllerContent);
         $this->filesystem->put($controllerPath, $file);
+        $this->info('Infyom controller refactoring completed');
     }
 
     private function getViewFileContent($modelName, $viewName) {

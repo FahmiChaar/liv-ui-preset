@@ -64,7 +64,7 @@ class ScaffoldCommand extends Command
             '--factory' => true,
         ]);
         $this->refactoringInfyomViews($modelFolderName, $modelPlural);
-        $this->refactoringInfyomController($modelPlural);
+        $this->refactoringInfyomController($model, $modelPlural, $modelFolderName);
     }
 
     private function refactoringInfyomViews($modelFolderName, $modelPlural) {
@@ -85,10 +85,10 @@ class ScaffoldCommand extends Command
         $this->info('Infyom views refactoring completed');
     }
 
-    private function refactoringInfyomController($modelPlural) {
-        $studlyModelName = Str::studly($modelPlural);
+    private function refactoringInfyomController($model, $modelPlural, $viewsFolderName) {
+        $studlyModelName = Str::studly($model);
         $controllerPath = app_path('Http/Controllers/Dashboard/'.$studlyModelName.'Controller.php');
-        $controllerContent = $this->getControllerFileContent($controllerPath, $modelPlural);
+        $controllerContent = $this->getControllerFileContent($controllerPath);
         $file = str_replace($modelPlural.'/', $studlyModelName.'/', $controllerContent);
         $this->filesystem->put($controllerPath, $file);
         $this->info('Infyom controller refactoring completed');
